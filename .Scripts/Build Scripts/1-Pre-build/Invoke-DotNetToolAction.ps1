@@ -1,17 +1,4 @@
-# DMS.Demo.GitVersion.CMD.ProjectFile
-Steps taken to replicate:
-1. Create a new project in Visual Studio.
-2. Add the new project to Git source control.
-3. Create a new branch from the master branch named 'feature/add-gitversion' & checkout.
-4. Add the GitVersion config file to the solution directory or run this command in the developer PowerShell windows after opening the solution: $gitverfile = '.\gitversion.yml'; New-Item -Path $gitverfile -ItemType File -Force;
-5. Add the GitVersion config file content. Find the GitHubFlow/v1 example @ https://gitversion.net/docs/reference/configuration.
-6. Add folder structure and 'Invoke-DotNetToolAction.ps1' script as seen in '.Scripts\Build Scripts\1-Pre-Build' or below.
-7. Configure the .csproj file to use GitVersion. See code below.
-8. Initialize GitVersion by building the project.
-
-Invoke-DotNetToolAction.ps1:
-```
-#region Script Parameters
+﻿#region Script Parameters
 
     # Set-Location -LiteralPath 'D:\My Data\Dev\dstammen\Apps\_Demos\DMS.Demo.GitVersion.CMD.AssemblyInfo';
     # powershell -ExecutionPolicy Bypass -File '.\.Scripts\Build Scripts\1-Pre-build\Invoke-DotNetToolAction.ps1' -ToolName 'GitVersion.Tool' -Action 'Install' -SolutionDir ((Get-Location).Path)
@@ -342,63 +329,3 @@ Invoke-DotNetToolAction.ps1:
     }
 
 #endregion Script Core
-```
-
-.csproj:
-```
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
-
-  <!-- Log the build macro values. -->
-  <Target Name="Log Macros" BeforeTargets="PreBuildEvent">
-    <Message Text="OutputPath: $(OutputPath)" Importance="high" />
-    <Message Text="Configuration: $(Configuration)" Importance="high" />
-    <Message Text="MSBuildProjectName: $(MSBuildProjectName)" Importance="high" />
-    <Message Text="TargetName: $(TargetName)" Importance="high" />
-    <Message Text="TargetPath: $(TargetPath)" Importance="high" />
-    <Message Text="MSBuildProjectFile: $(MSBuildProjectFile)" Importance="high" />
-    <Message Text="MSBuildProjectName: $(MSBuildProjectName)" Importance="high" />
-    <Message Text="TargetExt: $(TargetExt)" Importance="high" />
-    <Message Text="TargetFileName: $(TargetFileName)" Importance="high" />
-    <Message Text="DevEnvDir: N/A" Importance="high" />
-    <Message Text="OutputPath: $(OutputPath)" Importance="high" />
-    <Message Text="MSBuildProjectDirectory: $(MSBuildProjectDirectory)" Importance="high" />
-    <Message Text="SolutionName: $(SolutionName)" Importance="high" />
-    <Message Text="SolutionPath: $(SolutionPath)" Importance="high" />
-    <Message Text="SolutionDir: $(SolutionDir)" Importance="high" />
-    <Message Text="SolutionName: $(SolutionName)" Importance="high" />
-    <Message Text="Platform: $(Platform)" Importance="high" />
-    <Message Text="ProjectExt: $(MSBuildProjectExtension)" Importance="high" />
-    <Message Text="SolutionExt: $(SolutionExt)" Importance="high" />
-  </Target>
-
-  <!-- Update the .csproj file using GitVersion -->
-  <Target Name="Update-ProjectVersions" BeforeTargets="PreBuildEvent" Condition="'$(TargetFramework)' == 'net8.0' Or $(TargetFramework) &gt; 'net8.0'">
-    <Message Text="Ensuring GitVersion is installed." Importance="high" />
-    <Exec Command='powershell -ExecutionPolicy Bypass -File ".\.Scripts\Build Scripts\1-Pre-build\Invoke-DotNetToolAction.ps1" -ToolName "GitVersion.Tool" -Action "Install" -SolutionDir "$(SolutionDir)' />
-    <Message Text="Updating project versions in '$(SolutionDir)'." Importance="high" />
-    <!-- Should be dotnet-gitversion if global, otherwise dotnet dotnet-gitversion. -->
-    <Exec Command="dotnet dotnet-gitversion /updateprojectfiles" />
-  </Target>
-
-  <!-- Read assembly information -->
-  <Target Name="ExtractVersionAfterBuild" AfterTargets="PostBuildEvent">
-    <Message Text="Package Version: $(Version)" Importance="high" />
-  </Target>
-
-  <ItemGroup>
-    <None Include=".Scripts\Build Scripts\1-Pre-build\Invoke-DotNetToolAction.ps1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include=".Scripts\Build Scripts\2-Post-build\" />
-  </ItemGroup>
-
-</Project>
-
-```
