@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include=".Scripts\Build Scripts\1-Pre-build\Invoke-DotNetToolAction.ps1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include=".Scripts\Build Scripts\2-Post-build\" />
+  </ItemGroup>
+
 </Project>
