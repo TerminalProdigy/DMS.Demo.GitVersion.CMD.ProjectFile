@@ -1,11 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <FileVersion>0.0.1.0</FileVersion>
+    <InformationalVersion>0.0.1-add-gitversion.1+6.Branch.feature-add-gitversion.Sha.f3c7586e884d977fb3d517c153b38d728299514e</InformationalVersion>
+    <Version>0.0.1-add-gitversion.1</Version>
   </PropertyGroup>
-
   <!-- Log the build macro values. -->
   <Target Name="Log Macros" BeforeTargets="PreBuildEvent">
     <Message Text="OutputPath: $(OutputPath)" Importance="high" />
@@ -28,27 +30,22 @@
     <Message Text="ProjectExt: $(MSBuildProjectExtension)" Importance="high" />
     <Message Text="SolutionExt: $(SolutionExt)" Importance="high" />
   </Target>
-
   <!-- Update the .csproj file using GitVersion -->
   <Target Name="Update-ProjectVersions" BeforeTargets="PreBuildEvent" Condition="'$(TargetFramework)' == 'net8.0' Or $(TargetFramework) &gt; 'net8.0'">
     <Message Text="Ensuring GitVersion is installed." Importance="high" />
-    <Exec Command='powershell -ExecutionPolicy Bypass -File ".\.Scripts\Build Scripts\1-Pre-build\Invoke-DotNetToolAction.ps1" -ToolName "GitVersion.Tool" -Action "Install" -SolutionDir "$(SolutionDir)' />
+    <Exec Command="powershell -ExecutionPolicy Bypass -File &quot;.\.Scripts\Build Scripts\1-Pre-build\Invoke-DotNetToolAction.ps1&quot; -ToolName &quot;GitVersion.Tool&quot; -Action &quot;Install&quot; -SolutionDir &quot;$(SolutionDir)" />
     <Message Text="Updating project versions in '$(SolutionDir)'." Importance="high" />
     <!-- Should be dotnet-gitversion if global, otherwise dotnet dotnet-gitversion. -->
     <Exec Command="dotnet dotnet-gitversion /updateprojectfiles" />
   </Target>
-
   <!-- Read assembly information -->
   <Target Name="ExtractVersionAfterBuild" AfterTargets="PostBuildEvent">
     <Message Text="Package Version: $(Version)" Importance="high" />
   </Target>
-
   <ItemGroup>
     <None Include=".Scripts\Build Scripts\1-Pre-build\Invoke-DotNetToolAction.ps1" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include=".Scripts\Build Scripts\2-Post-build\" />
   </ItemGroup>
-
 </Project>
